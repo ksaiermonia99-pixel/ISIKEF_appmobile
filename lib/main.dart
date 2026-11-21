@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 
-// Raccourci pour écrire une durée sans utiliser ".ms"
+import 'InformatiqueTab.dart';
+import 'MasterTab.dart';
+import 'ReseauxTab.dart';
+
 Duration _d(int millisecondes) => Duration(milliseconds: millisecondes);
 
 void main() => runApp(const MyApp());
@@ -23,17 +26,12 @@ class MyApp extends StatelessWidget {
 class EnGeneral extends StatelessWidget {
   const EnGeneral({Key? key}) : super(key: key);
 
-  // Règle : .animate() est appliqué uniquement sur un Container
-  // (jamais sur un Text, un Icon, un Row, un Flexible ou un Expanded).
-
-  // Style commun des textes (change la taille ici pour tout ajuster)
   static const TextStyle _styleTexte = TextStyle(
     color: Colors.black,
     fontSize: 18,
     height: 1.4,
   );
 
-  // Les 4 axes du texte d'origine, un par ligne
   static const List<String> _objectifs = [
     "La maîtrise des technologies informatiques modernes",
     "L'innovation et la recherche scientifique",
@@ -41,18 +39,13 @@ class EnGeneral extends StatelessWidget {
     "L'adaptation aux évolutions rapides du domaine numérique",
   ];
 
-  // ---------------------------------------------------------------------------
-  // En-tête : logo qui flotte + nom de l'institut
-  // ---------------------------------------------------------------------------
   Widget _entete() {
     return Container(
       margin: const EdgeInsets.only(top: 12, bottom: 4),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          // Container extérieur : entrée (fondu + zoom)
           Container(
-                // Container intérieur : flottement en boucle
                 child:
                     Container(
                           width: 96,
@@ -131,17 +124,13 @@ class EnGeneral extends StatelessWidget {
     );
   }
 
-  // ---------------------------------------------------------------------------
-  // Carte arrondie : titre avec icône + contenu.
-  // Apparition en cascade (fondu + montée + zoom) puis un reflet lumineux.
-  // ---------------------------------------------------------------------------
   Widget _carte({
     required int index,
     required IconData icone,
     required String titre,
     required Widget child,
   }) {
-    final int debut = 700 + index * 400; // moment d'apparition de la carte
+    final int debut = 700 + index * 400;
 
     return Container(
           width: double.infinity,
@@ -165,7 +154,6 @@ class EnGeneral extends StatelessWidget {
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  // Icône du titre : apparition avec rebond
                   Container(
                         padding: const EdgeInsets.all(8),
                         decoration: const BoxDecoration(
@@ -215,9 +203,6 @@ class EnGeneral extends StatelessWidget {
         .shimmer(duration: _d(1500), color: Colors.white70);
   }
 
-  // ---------------------------------------------------------------------------
-  // Ligne d'objectif : entrée par la gauche, l'une après l'autre
-  // ---------------------------------------------------------------------------
   Widget _ligneObjectif({required String texte, required int index}) {
     return Container(
           margin: const EdgeInsets.only(bottom: 10),
@@ -235,10 +220,6 @@ class EnGeneral extends StatelessWidget {
         .slideX(begin: -0.2, end: 0, curve: Curves.easeOutCubic);
   }
 
-  // ---------------------------------------------------------------------------
-  // Ligne de contact : tuile claire qui entre par la droite,
-  // icône qui pulse doucement.
-  // ---------------------------------------------------------------------------
   Widget _ligneContact({
     required IconData icone,
     required Color couleur,
@@ -280,15 +261,13 @@ class EnGeneral extends StatelessWidget {
         .slideX(begin: 0.3, end: 0, curve: Curves.easeOutCubic);
   }
 
-  // ---------------------------------------------------------------------------
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.blue[100],
         foregroundColor: const Color.fromARGB(255, 6, 0, 0),
-        scrolledUnderElevation:
-            0, // garde la même couleur quand on fait défiler
+        scrolledUnderElevation: 0,
         centerTitle: true,
         title: Container(child: const Text('ISI_KEF'))
             .animate()
@@ -296,7 +275,6 @@ class EnGeneral extends StatelessWidget {
             .slideX(begin: -0.3, end: 0, curve: Curves.easeOutCubic),
         actions: <Widget>[
           IconButton(
-            // La flèche oscille en boucle pour inviter à cliquer
             icon: Container(child: const Icon(Icons.navigate_next))
                 .animate(
                   onPlay: (controller) => controller.repeat(reverse: true),
@@ -308,8 +286,37 @@ class EnGeneral extends StatelessWidget {
                   curve: Curves.easeInOut,
                 ),
             tooltip: 'plus_informations',
+
             onPressed: () {
-              // TODO : ouvrir la page « plus d'informations »
+              Navigator.of(context).push(
+                MaterialPageRoute<void>(
+                  builder: (context) => DefaultTabController(
+                    length: 3,
+                    child: Scaffold(
+                      appBar: AppBar(
+                        title: const Text('plus_informations'),
+                        bottom: const TabBar(
+                          tabs: <Widget>[
+                            Tab(
+                              icon: Icon(Icons.computer),
+                              text: 'informatique',
+                            ),
+                            Tab(icon: Icon(Icons.lan), text: 'reseaux'),
+                            Tab(icon: Icon(Icons.school), text: 'master'),
+                          ],
+                        ),
+                      ),
+                      body: const TabBarView(
+                        children: [
+                          InformatiqueTab(),
+                          ReseauxTab(),
+                          MasterTab(),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              );
             },
           ),
         ],
@@ -329,7 +336,7 @@ class EnGeneral extends StatelessWidget {
             padding: const EdgeInsets.symmetric(vertical: 8),
             child: Align(
               alignment: Alignment.topCenter,
-              // Largeur limitée pour rester lisible sur tablette / web
+
               child: ConstrainedBox(
                 constraints: const BoxConstraints(maxWidth: 600),
                 child: Column(
